@@ -12,6 +12,7 @@
 
 .tweet-box header h2 img {
   height: 60px;
+  padding-right: 8px;
   display: inline-block;
   border-radius: 5px;
   vertical-align: -35px;
