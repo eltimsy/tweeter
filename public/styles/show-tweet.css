@@ -1,0 +1,55 @@
+.tweet-box {
+  border-radius: 5px;
+  border: 1px solid #D1D1D1;
+  margin: 2em 2em;
+  background-color: #96d0ec;
+}
+
+.tweet-box header {
+  padding: 5px 5px 0px 5px;
+  color: #6b491c;
+}
+
+.tweet-box header h2 img {
+  height: 60px;
+  display: inline-block;
+  border-radius: 5px;
+  vertical-align: -35px;
+}
+
+.tweet-box header h2{
+  padding: 0px 5px;
+  margin: 5px 1px 10px;
+  display: inline-block;
+}
+
+.tweet-box .atName{
+  top: -10px;
+  color: gray;
+  font-weight: normal;
+  float: right;
+  position: relative;
+}
+
+.tweet-box .tweet-content {
+  background-color: white;
+  padding: 30px 15px;
+  margin: 0px 0px;
+}
+
+.tweet-box footer {
+  padding: 10px 10px;
+  font-size: .85em;
+}
+
+.tweet-box .social-buttons{
+  float:right;
+  visibility: hidden;
+  position: relative;
+  top: -15px;
+  color: #308a62;
+}
+
+.tweet-box:hover .social-buttons{
+  visibility: visible;
+}
