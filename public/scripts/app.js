@@ -35,9 +35,21 @@ $(document).ready(function() {
     var $newIheart = $("<i>").addClass("fa fa-heart");
     var $newNodeText = $(document.createTextNode("Just tweeted"));
     var theDay = Math.floor((Date.now() - footer)/86400000);
+    var theHour = Math.floor((Date.now() - footer)/3600000);
+    var theMinute = Math.floor((Date.now()- footer)/60000);
+    var theSecond = Math.floor((Date.now()- footer)/1000);
 
     $newDivTime.attr("data-time",footer);
-    $newDivTime.append(theDay + " days ago.");
+    if(theDay > 0) {
+      $newDivTime.append(theDay + " days ago.");
+    } else if(theHour > 0) {
+      $newDivTime.append(theHour + " hours ago.");
+    } else if(theMinute > 0) {
+      $newDivTime.append(theMinute + " minutes ago.");
+    } else {
+      $newDivTime.append(theSecond + " seconds ago.");
+    }
+
     $newDivSocial.append($newIFlag, $newIretweet, $newIheart);
     $newFooter.append($newDivTime, $newDivSocial);
     return $newFooter
