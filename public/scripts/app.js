@@ -16,9 +16,6 @@ $(document).ready(function() {
     $newHeader.append($newHtwo, $newHfour);
     $newHfour.append($newNodeHandle);
     $newHtwo.append($newImage, $newNodeName);
-
-
-
     return $newHeader;
   }
 
@@ -61,10 +58,13 @@ $(document).ready(function() {
   }
 
   function renderTweets(tweets) {
+    var $allData = $("<div>");
     for(var data of tweets) {
       var $tweet = createTweetElement(data);
-      $("#all-tweets").append($tweet);
+      //$("#all-tweets").append($tweet);
+      $allData.append($tweet);
     }
+    $("#all-tweets").append($allData);
   }
 
   function loadTweets() {
@@ -72,13 +72,36 @@ $(document).ready(function() {
       url: '/tweets',
       method: 'GET',
       success: function(data) {
-        renderTweets(data)
+        if(data === undefined) {
+          alert("no data");
+        } else {
+          $("#all-tweets").empty();
+          renderTweets(data)
+        }
+      },
+      error: function(request, status, error) {
+        alert(request.reponseText);
       }
     });
   }
 
-  loadTweets();
-
+  function postTweets(tweetData) {
+    $.ajax({
+      url: '/tweets',
+      method: 'post',
+      data: tweetData,
+      success: function(data) {
+        if(data === undefined) {
+          alert("no data");
+        } else {
+          loadTweets();
+        }
+      },
+      error: function(request, status, error) {
+        alert(request.reponseText);
+      }
+    });
+  }
 
   $(".tweet-form").on("submit", function(env){
     env.preventDefault();
@@ -87,25 +110,18 @@ $(document).ready(function() {
 
     $('.error-message').text('');
     $('.error-message').fadeIn();
+
     if(textTotal === 0) {
-      console.log($('.error-message'));
       $('.error-message').text("Type something please");
       $('.error-message').fadeOut(1500);
     } else if(textTotal > 140) {
       $('.error-message').text("You typed more than 140 characters!");
       $('.error-message').fadeOut(1500);
     } else {
-      $.ajax({
-        url: '/tweets',
-        method: 'post',
-        data: tweetData,
-        //dataType: String
-        success: function(data){
-          console.log(data);
-          var $tweet = createTweetElement(data);
-          $("#all-tweets").append($tweet);
-        }
-      });
+      postTweets(tweetData);
     }
   });
+
+  loadTweets();
+
 });
