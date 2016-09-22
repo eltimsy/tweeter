@@ -6,10 +6,10 @@ const Chance      = require("chance"),
 const md5 = require('md5');
 
 module.exports = {
-  generateRandomUser: () => {
+  generateUser: (username) => {
     const gender    = chance.gender();
-    const firstName = chance.first({gender: gender});
-    const lastName  = chance.last();
+    const firstName = username || chance.first({gender: gender});
+    const lastName  = username || chance.last();
     const userName  = firstName + " " + lastName;
 
     let userHandle = "@";

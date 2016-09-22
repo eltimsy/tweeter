@@ -113,9 +113,9 @@ function postTweets(tweetData) {
 function makeLogin(user) {
   if(user){
     var template = _.template(
-      '<div class="full-login">' +
+      '<div class="full-logout">' +
         '<div class="login-name"> <%= username %> </div>' +
-        '<form action="/logout" method="POST" style="margin:10px;">' +
+        '<form class="logout-form" action="/logout" method="POST">' +
           '<input type="submit" value="Logout">' +
         '</form>'+
       '</div>'
@@ -124,8 +124,8 @@ function makeLogin(user) {
   } else {
     var template = _.template(
       '<div class="full-login">' +
-        '<form class="login-form" action="/login" method="POST" style="margin:10px;">' +
-          '<input id="username" type="text" name="username" placeholder="name" style="width: 100px">' +
+        '<form class="login-form" action="/login" method="POST">' +
+          '<input class="login-box" id="username" type="text" name="username" placeholder="name" style="width: 100px">' +
           '<input type="submit" value="Login">' +
         '</form>' +
       '</div>'
@@ -137,12 +137,11 @@ function makeLogin(user) {
 }
 
 $(document).ready(function() {
-
   $('.full-login').on("submit", function(ev) {
-    ev.preventDefault();
-    console.log($('#username').val());
+    //ev.preventDefault();
     let $newlogin = makeLogin($('#username').val());
     $(".full-login").empty();
+    $(".full-login").css({"margin":"0px"});
     $(".full-login").append($newlogin);
   })
 
@@ -169,5 +168,7 @@ $(document).ready(function() {
   });
 
   loadTweets();
+  let $newlogin = makeLogin(document.cookie.substring(9));
+  $(".full-login").empty().append($newlogin);
 
 });
