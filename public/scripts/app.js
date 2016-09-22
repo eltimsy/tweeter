@@ -1,120 +1,119 @@
+
+/*
+ * Client-side JS logic goes here
+ * jQuery is already loaded
+ * Reminder: Use (and do all your DOM work in) jQuery's document ready function
+ */
+ function e(str) {
+     var div = document.createElement('div');
+     div.appendChild(document.createTextNode(str));
+     return div.innerHTML;
+ }
+
+function createTweetElement(tweet) {
+  var $user = [e(tweet.user.name), e(tweet.user.handle), e(tweet.user.avatars.small)];
+  var $content = e(tweet.content.text)
+  var $createdAt = e(tweet.created_at)
+  var $handle = e(tweet.handle);
+
+  var theDay = Math.floor((Date.now() - $createdAt)/86400000);
+  var theHour = Math.floor((Date.now() - $createdAt)/3600000);
+  var theMinute = Math.floor((Date.now()- $createdAt)/60000);
+  var theSecond = Math.floor((Date.now()- $createdAt)/1000);
+  var newTime = ""
+
+  if(theDay > 0) {
+    newTime = theDay + " days ago.";
+  } else if(theHour > 0) {
+    newTime = theHour + " hours ago.";
+  } else if(theMinute > 0) {
+    newTime = theMinute + " minutes ago.";
+  } else {
+    newTime = theSecond + " seconds ago.";
+  }
+
+
+  var template = _.template(
+    "<article class='tweet-box'>" +
+      "<header>" +
+        "<h2> <img src= <%= usericon %>> <%= username %> </h2>" +
+        "<h4 class='atName'> <%= userhandle %> </h4>" +
+      "</header>" +
+      "<p class='tweet-content'> <%= paragraph %> </p>" +
+      "<footer>" +
+        "<div class='time-frame'> <%= newTime %> </div>" +
+        "<div class='social-buttons'>" +
+          "<i class='fa fa-flag'></i>" +
+          "<i class='fa fa-retweet'></i>" +
+          "<i class='fa fa-heart'></i>" +
+        "</div>" +
+      "</article>"
+  );
+
+
+  //$tweet.append($header, $paragraph, $foote);
+  return template({
+    username: $user[0],
+    usericon: $user[2],
+    userhandle: $user[1],
+    paragraph: $content,
+    newTime: newTime
+  });
+}
+
+function renderTweets(tweets) {
+  var $allData = $("<div>");
+  for(var data of tweets) {
+    var $tweet = createTweetElement(data);
+    //$("#all-tweets").append($tweet);
+    $allData.append($tweet);
+  }
+  $("#all-tweets").append($allData);
+}
+
+function loadTweets() {
+  $.ajax({
+    url: '/tweets',
+    method: 'GET',
+    success: function(data) {
+      if(data === undefined) {
+        alert("no data");
+      } else {
+        $("#all-tweets").empty();
+        $(".tweet-text").val("");
+        $(".counter").text("140");
+        renderTweets(data)
+      }
+    },
+    error: function(request, status, error) {
+      alert(request.reponseText);
+    }
+  });
+}
+
+function postTweets(tweetData) {
+  $.ajax({
+    url: '/tweets',
+    method: 'post',
+    data: tweetData,
+    success: function(data) {
+      if(data === undefined) {
+        alert("no data");
+      } else {
+        loadTweets();
+      }
+    },
+    error: function(request, status, error) {
+      alert(request.reponseText);
+    }
+  });
+}
+
 $(document).ready(function() {
-  /*
-   * Client-side JS logic goes here
-   * jQuery is already loaded
-   * Reminder: Use (and do all your DOM work in) jQuery's document ready function
-   */
-  function createTweetHeader(header){
-    var $newHeader = $("<header>");
-    var $newHtwo = $("<h2>");
-    var $newImage = $("<img>");
-    var $newNodeName = $(document.createTextNode(header[0]));
-    var $newHfour = $("<h4>").addClass("atName");
-    var $newNodeHandle = $(document.createTextNode(header[1]));
 
-    $newImage.attr("src", header[2]);
-    $newHeader.append($newHtwo, $newHfour);
-    $newHfour.append($newNodeHandle);
-    $newHtwo.append($newImage, $newNodeName);
-    return $newHeader;
-  }
-
-  function createParagraph(para) {
-    var $newPara = $("<p>").addClass("tweet-content");
-
-    $newPara.append(para);
-    return $newPara;
-  }
-
-  function createFooter(footer) {
-    var $newFooter = $("<footer>");
-    var $newDivTime = $("<div>").addClass("time-frame");
-    var $newDivSocial = $("<div>").addClass("social-buttons");
-    var $newIFlag = $("<i>").addClass("fa fa-flag");
-    var $newIretweet = $("<i>").addClass("fa fa-retweet");
-    var $newIheart = $("<i>").addClass("fa fa-heart");
-    var $newNodeText = $(document.createTextNode("Just tweeted"));
-    var theDay = Math.floor((Date.now() - footer)/86400000);
-    var theHour = Math.floor((Date.now() - footer)/3600000);
-    var theMinute = Math.floor((Date.now()- footer)/60000);
-    var theSecond = Math.floor((Date.now()- footer)/1000);
-
-    $newDivTime.attr("data-time",footer);
-    if(theDay > 0) {
-      $newDivTime.append(theDay + " days ago.");
-    } else if(theHour > 0) {
-      $newDivTime.append(theHour + " hours ago.");
-    } else if(theMinute > 0) {
-      $newDivTime.append(theMinute + " minutes ago.");
-    } else {
-      $newDivTime.append(theSecond + " seconds ago.");
-    }
-
-    $newDivSocial.append($newIFlag, $newIretweet, $newIheart);
-    $newFooter.append($newDivTime, $newDivSocial);
-    return $newFooter
-  }
-
-  function createTweetElement(tweet) {
-    var $tweet = $("<article>").addClass("tweet-box");
-    var $user = [tweet.user.name, tweet.user.handle, tweet.user.avatars.small];
-    var $content = [tweet.content.text]
-    var $createdAt = [tweet.created_at]
-    var $footer = createFooter($createdAt);
-    var $paragraph = createParagraph($content);
-    var $header = createTweetHeader($user);
-    var $handle = tweet.handle;
-
-    $tweet.append($header, $paragraph, $footer);
-    return $tweet;
-  }
-
-  function renderTweets(tweets) {
-    var $allData = $("<div>");
-    for(var data of tweets) {
-      var $tweet = createTweetElement(data);
-      //$("#all-tweets").append($tweet);
-      $allData.append($tweet);
-    }
-    $("#all-tweets").append($allData);
-  }
-
-  function loadTweets() {
-    $.ajax({
-      url: '/tweets',
-      method: 'GET',
-      success: function(data) {
-        if(data === undefined) {
-          alert("no data");
-        } else {
-          $("#all-tweets").empty();
-          renderTweets(data)
-        }
-      },
-      error: function(request, status, error) {
-        alert(request.reponseText);
-      }
-    });
-  }
-
-  function postTweets(tweetData) {
-    $.ajax({
-      url: '/tweets',
-      method: 'post',
-      data: tweetData,
-      success: function(data) {
-        if(data === undefined) {
-          alert("no data");
-        } else {
-          loadTweets();
-        }
-      },
-      error: function(request, status, error) {
-        alert(request.reponseText);
-      }
-    });
-  }
-
+  $('.container').on('click', 'article.tweet-box', function() {
+    alert('Tweet, Tweet!');
+  });
   $(".tweet-form").on("submit", function(env){
     env.preventDefault();
     var textTotal = $('.tweet-text').val().length;
