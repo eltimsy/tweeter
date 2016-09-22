@@ -1,31 +1,33 @@
-
+'use strict'
 /*
  * Client-side JS logic goes here
  * jQuery is already loaded
  * Reminder: Use (and do all your DOM work in) jQuery's document ready function
  */
  function e(str) {
-     var div = document.createElement('div');
+     let div = document.createElement('div');
      div.appendChild(document.createTextNode(str));
      return div.innerHTML;
  }
 
 function createTweetElement(tweet) {
-  var $user = [e(tweet.user.name), e(tweet.user.handle), e(tweet.user.avatars.small)];
-  var $content = e(tweet.content.text)
-  var $createdAt = e(tweet.created_at)
-  var $handle = e(tweet.handle);
+  let $user = [e(tweet.user.name), e(tweet.user.handle), e(tweet.user.avatars.small)];
+  let $content = e(tweet.content.text)
+  let $createdAt = e(tweet.created_at)
+  let $handle = e(tweet.handle);
 
-  var theDay = Math.floor((Date.now() - $createdAt)/86400000);
-  var theHour = Math.floor((Date.now() - $createdAt)/3600000);
-  var theMinute = Math.floor((Date.now()- $createdAt)/60000);
-  var theSecond = Math.floor((Date.now()- $createdAt)/1000);
-  var newTime = ""
+  let theDay = Math.floor((Date.now() - $createdAt)/86400000);
+  let theHour = Math.floor((Date.now() - $createdAt)/3600000);
+  let theMinute = Math.floor((Date.now()- $createdAt)/60000);
+  let theSecond = Math.floor((Date.now()- $createdAt)/1000);
+  let newTime = ""
 
   if(theDay > 0) {
     newTime = theDay + " days ago.";
-  } else if(theHour > 0) {
+  } else if(theHour > 1) {
     newTime = theHour + " hours ago.";
+  } else if (theHour === 1) {
+    newTime = theHour + " hour ago.";
   } else if(theMinute > 0) {
     newTime = theMinute + " minutes ago.";
   } else {
@@ -33,7 +35,7 @@ function createTweetElement(tweet) {
   }
 
 
-  var template = _.template(
+  let template = _.template(
     "<article class='tweet-box'>" +
       "<header>" +
         "<h2> <img src= <%= usericon %>> <%= username %> </h2>" +
@@ -62,10 +64,9 @@ function createTweetElement(tweet) {
 }
 
 function renderTweets(tweets) {
-  var $allData = $("<div>");
-  for(var data of tweets) {
-    var $tweet = createTweetElement(data);
-    //$("#all-tweets").append($tweet);
+  let $allData = $("<div>");
+  for(let data of tweets) {
+    let $tweet = createTweetElement(data);
     $allData.append($tweet);
   }
   $("#all-tweets").append($allData);
@@ -109,15 +110,49 @@ function postTweets(tweetData) {
   });
 }
 
+function makeLogin(user) {
+  if(user){
+    var template = _.template(
+      '<div class="full-login">' +
+        '<div class="login-name"> <%= username %> </div>' +
+        '<form action="/logout" method="POST" style="margin:10px;">' +
+          '<input type="submit" value="Logout">' +
+        '</form>'+
+      '</div>'
+    )
+
+  } else {
+    var template = _.template(
+      '<div class="full-login">' +
+        '<form class="login-form" action="/login" method="POST" style="margin:10px;">' +
+          '<input id="username" type="text" name="username" placeholder="name" style="width: 100px">' +
+          '<input type="submit" value="Login">' +
+        '</form>' +
+      '</div>'
+    )
+  }
+  return template({
+    username: user
+  });
+}
+
 $(document).ready(function() {
+
+  $('.full-login').on("submit", function(ev) {
+    ev.preventDefault();
+    console.log($('#username').val());
+    let $newlogin = makeLogin($('#username').val());
+    $(".full-login").empty();
+    $(".full-login").append($newlogin);
+  })
 
   $('.container').on('click', 'article.tweet-box', function() {
     alert('Tweet, Tweet!');
   });
-  $(".tweet-form").on("submit", function(env){
+  $(".tweet-form").on("submit", function(env) {
     env.preventDefault();
-    var textTotal = $('.tweet-text').val().length;
-    var tweetData = $(this).serialize();
+    let textTotal = $('.tweet-text').val().length;
+    let tweetData = $(this).serialize();
 
     $('.error-message').text('');
     $('.error-message').fadeIn();
