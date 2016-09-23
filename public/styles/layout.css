@@ -61,14 +61,7 @@ body {
   position: relative;
 }
 
-.logout-button {
-  color: white;
-  background-color: #034e4e;
-  padding: 3px;
-  border-radius: 3px;
-}
-
-.login-button {
+.button {
   color: white;
   background-color: #034e4e;
   padding: 3px;

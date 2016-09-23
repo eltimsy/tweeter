@@ -1,12 +1,12 @@
 $(document).ready(function () {
-  $('.tweet-text').on('input',function (){
+  $('.tweet-text').on('input', function (){
 
     let textTotal = $(this).val().length;
     let counterLink = $(this).siblings('span');
-    $(counterLink).text(140 - textTotal);
-    let totalCount = Number(counterLink.text());
+    let charCount = 140 - textTotal;
+    $(counterLink).text(charCount);
 
-    if(totalCount < 0) {
+    if(charCount < 0) {
       $(counterLink).css('color', 'red');
     } else {
       $(counterLink).css('color', 'teal');

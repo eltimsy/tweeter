@@ -8,16 +8,15 @@ function e(str) {
 }
 
 function createTweetElement(tweet) {
-  let $user = [e(tweet.user.name), e(tweet.user.handle), e(tweet.user.avatars.small)];
-  let $content = e(tweet.content.text)
-  let $createdAt = e(tweet.created_at)
-  let $handle = e(tweet.handle);
+  let user = [e(tweet.user.name), e(tweet.user.handle), e(tweet.user.avatars.small)];
+  let content = e(tweet.content.text);
+  let createdAt = e(tweet.created_at);
 
-  let theDay = Math.floor((Date.now() - $createdAt)/86400000);
-  let theHour = Math.floor((Date.now() - $createdAt)/3600000);
-  let theMinute = Math.floor((Date.now()- $createdAt)/60000);
-  let theSecond = Math.floor((Date.now()- $createdAt)/1000);
-  let newTime = ""
+  let theDay = Math.floor((Date.now() - createdAt)/86400000);
+  let theHour = Math.floor((Date.now() - createdAt)/3600000);
+  let theMinute = Math.floor((Date.now()- createdAt)/60000);
+  let theSecond = Math.floor((Date.now()- createdAt)/1000);
+  let newTime = "";
 
   if(theDay > 0) {
     newTime = theDay + " days ago.";
@@ -49,55 +48,39 @@ function createTweetElement(tweet) {
   );
 
   return template({
-    username: $user[0],
-    usericon: $user[2],
-    userhandle: $user[1],
-    paragraph: $content,
+    username: user[0],
+    usericon: user[2],
+    userhandle: user[1],
+    paragraph: content,
     newTime: newTime
   });
 }
 
 function renderTweets(tweets) {
   let $allData = $("<div>");
-  for(let data of tweets) {
-    let $tweet = createTweetElement(data);
+  for(let tweet of tweets) {
+    let $tweet = createTweetElement(tweet);
     $allData.append($tweet);
   }
   $("#all-tweets").append($allData);
 }
 
-function loadTweets() {
-  $.ajax({
-    url: '/tweets',
-    method: 'GET',
-    success: function(data) {
-      if(data === undefined) {
-        alert("no data");
-      } else {
-        $("#all-tweets").empty();
-        $(".tweet-text").val("");
-        $(".counter").text("140");
-        renderTweets(data)
-      }
-    },
-    error: function(request, status, error) {
-      alert(request.reponseText);
-    }
-  });
+function resetTweets() {
+  $("#all-tweets").empty();
+  $(".tweet-text").val("");
+  $(".counter").text("140");
 }
 
-function loadmyTweets() {
+function loadTweets(url) {
   $.ajax({
-    url: '/tweets/my',
+    url: url,
     method: 'GET',
     success: function(data) {
       if(data === undefined) {
         alert("no data");
       } else {
-        $("#all-tweets").empty();
-        $(".tweet-text").val("");
-        $(".counter").text("140");
-        renderTweets(data)
+        resetTweets();
+        renderTweets(data);
       }
     },
     error: function(request, status, error) {
@@ -116,9 +99,9 @@ function postTweets(tweetData) {
         alert("no data");
       } else {
         if(username) {
-          loadmyTweets();
+          loadTweets('/tweets/my');
         } else {
-          loadTweets();
+          loadTweets('/tweets');
         }
       }
     },
@@ -135,7 +118,7 @@ function makeLogin(user) {
       '<div class="full-logout">' +
         '<div class="login-name"> Welcome! <%= username %> </div>' +
         '<form class="logout-form" action="/logout" method="POST">' +
-          '<input class="logout-button" type="submit" value="Logout">' +
+          '<input class="button" type="submit" value="Logout">' +
         '</form>'+
       '</div>'
     )
@@ -145,7 +128,7 @@ function makeLogin(user) {
       '<div class="full-login">' +
         '<form class="login-form" action="/login" method="POST">' +
           '<input class="login-box" id="username" type="text" name="username" placeholder="name" style="width: 100px">' +
-          '<input class="login-button" type="submit" value="Login">' +
+          '<input class="button" type="submit" value="Login">' +
         '</form>' +
       '</div>'
     )
@@ -157,9 +140,11 @@ function makeLogin(user) {
 
 $(document).ready(function() {
   $('.container').on('click', 'article.tweet-box', function() {
+    // tweet tweet
   });
-  $(".tweet-form").on("submit", function(env) {
-    env.preventDefault();
+
+  $(".tweet-form").on("submit", function(ev) {
+    ev.preventDefault();
     let textTotal = $('.tweet-text').val().length;
     let tweetData = $(this).serialize();
 
@@ -179,10 +164,10 @@ $(document).ready(function() {
   let $newlogin = makeLogin(username);
 
   if(username) {
-    loadmyTweets();
+    loadTweets('/tweets/my');
   } else {
-    loadTweets();
+    loadTweets('/tweets');
   }
-  $(".full-login").css({"margin":"0px"});
+  $(".full-login").css({"margin":"0"});
   $(".full-login").empty().append($newlogin);
 });
