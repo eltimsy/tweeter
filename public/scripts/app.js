@@ -97,11 +97,7 @@ function postTweets(tweetData) {
       if(data === undefined) {
         alert("no data");
       } else {
-        if(username) {
-          loadTweets('/tweets/my');
-        } else {
-          loadTweets('/tweets');
-        }
+        checkUser();
       }
     },
     error: function(request, status, error) {
@@ -167,7 +163,6 @@ $(document).ready(function() {
   $('#nav-bar').on('submit', ".login-form", function(ev) {
     let login = $(this).serialize();
     ev.preventDefault();
-    console.log("data", login)
     $.ajax({
       url: '/login',
       method: 'post',
