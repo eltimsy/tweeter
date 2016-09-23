@@ -28,7 +28,6 @@ module.exports = function(db) {
   });
 
   tweets.post("/", function(req, res) {
-    // console.log("New Tweet, Body:", req.body);
     if (!req.body.text) {
       res.status(400);
       return res.send("{'error': 'invalid request'}\n");

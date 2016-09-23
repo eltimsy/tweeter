@@ -157,7 +157,6 @@ function makeLogin(user) {
 
 $(document).ready(function() {
   $('.container').on('click', 'article.tweet-box', function() {
-    alert('Tweet, Tweet!');
   });
   $(".tweet-form").on("submit", function(env) {
     env.preventDefault();
