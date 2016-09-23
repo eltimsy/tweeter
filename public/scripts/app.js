@@ -133,20 +133,22 @@ function makeLogin(user) {
   });
 }
 
+function resetLogin(user){
+  let $newlogin = makeLogin(user);
+  $(".full-login").css({"margin":"0"});
+  $(".full-login").empty().append($newlogin);
+}
+
 function checkUser() {
   $.ajax({
     url: '/auth',
     method: 'get',
     success: function(data) {
       if(!data.username) {
-        let $newlogin = makeLogin(data.username);
-        $(".full-login").css({"margin":"0"});
-        $(".full-login").empty().append($newlogin);
+        resetLogin(data.username);
         loadTweets('/tweets');
       } else {
-        let $newlogin = makeLogin(data.username);
-        $(".full-login").css({"margin":"0"});
-        $(".full-login").empty().append($newlogin);
+        resetLogin(data.username);
         loadTweets('/tweets/my', data.username);
       }
     },
@@ -159,7 +161,6 @@ function checkUser() {
 $(document).ready(function() {
 
   checkUser();
-
   $('#nav-bar').on('submit', ".login-form", function(ev) {
     let login = $(this).serialize();
     ev.preventDefault();
