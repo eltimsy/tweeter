@@ -17,7 +17,7 @@ module.exports = function(db) {
   });
 
   tweets.get("/my", function(req, res) {
-    let user = req.cookies.username;
+    let user = req.session.user;
     let tweets = db.collection("tweets").find({ "user.name": `${user} ${user}` }).sort({"created_at": -1});
     tweets.toArray((err, results) => {
       // simulate delay
@@ -32,7 +32,7 @@ module.exports = function(db) {
       res.status(400);
       return res.send("{'error': 'invalid request'}\n");
     }
-    const user = User.generateUser(req.cookies.username);
+    const user = User.generateUser(req.session.user);
     const tweet = {
       user: user,
       content: {

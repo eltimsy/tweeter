@@ -1,5 +1,4 @@
 'use strict'
-const username = document.cookie.substring(9);
 
 function e(str) {
   let div = document.createElement('div');
@@ -71,7 +70,7 @@ function resetTweets() {
   $(".counter").text("140");
 }
 
-function loadTweets(url) {
+function loadTweets(url, user) {
   $.ajax({
     url: url,
     method: 'GET',
@@ -138,7 +137,69 @@ function makeLogin(user) {
   });
 }
 
+function checkUser() {
+  $.ajax({
+    url: '/auth',
+    method: 'get',
+    success: function(data) {
+      if(!data.username) {
+        let $newlogin = makeLogin(data.username);
+        $(".full-login").css({"margin":"0"});
+        $(".full-login").empty().append($newlogin);
+        loadTweets('/tweets');
+      } else {
+        let $newlogin = makeLogin(data.username);
+        $(".full-login").css({"margin":"0"});
+        $(".full-login").empty().append($newlogin);
+        loadTweets('/tweets/my', data.username);
+      }
+    },
+    error: function(request, status, error) {
+      alert(request.responseText);
+    }
+  });
+}
+
 $(document).ready(function() {
+
+  checkUser();
+
+  $('#nav-bar').on('submit', ".login-form", function(ev) {
+    let login = $(this).serialize();
+    ev.preventDefault();
+    console.log("data", login)
+    $.ajax({
+      url: '/login',
+      method: 'post',
+      data: login,
+      success: function(data) {
+        if(data === undefined) {
+            alert("no error");
+          } else {
+            checkUser();
+          }
+        },
+      error: function(request, status, error) {
+        alert(request.reponseText);
+      }
+    });
+  })
+
+  $('#nav-bar').on('submit', ".logout-form", function(ev) {
+    ev.preventDefault();
+    $.ajax({
+      url: '/logout',
+      method: 'post',
+      success: function() {
+        checkUser();
+      },
+      error: function(request, status, error) {
+        alert(request.reponseText);
+      }
+    });
+  })
+
+
   $('.container').on('click', 'article.tweet-box', function() {
     // tweet tweet
   });
@@ -161,13 +222,5 @@ $(document).ready(function() {
       postTweets(tweetData);
     }
   });
-  let $newlogin = makeLogin(username);
 
-  if(username) {
-    loadTweets('/tweets/my');
-  } else {
-    loadTweets('/tweets');
-  }
-  $(".full-login").css({"margin":"0"});
-  $(".full-login").empty().append($newlogin);
 });
