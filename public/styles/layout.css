@@ -37,17 +37,23 @@ body {
   margin: 20px 10px 0px;
 }
 
+.full-logout{
+  margin-right: 5px;
+}
+
 .login-name {
   display: inline-block;
   position: relative;
+  margin-top: 15px;
   margin-right: 5px;
   font-size: 1.5em;
-  font-family: Arial;
+  font-weight: bold;
   color: #5e5392;
-  border: 1px solid darkblue;
+  border: 1px solid lightgray;
   padding: 3px;
   border-radius: 3px;
-  background-color: #25c131;
+  background-color: white;
+  box-shadow: 3px 4px 3px 0px rgba(26,21,26,1);
 }
 
 .logout-form {
@@ -55,6 +61,22 @@ body {
   position: relative;
 }
 
+.logout-button {
+  color: white;
+  background-color: #034e4e;
+  padding: 3px;
+  border-radius: 3px;
+}
+
+.login-button {
+  color: white;
+  background-color: #034e4e;
+  padding: 3px;
+  border-radius: 3px;
+}
+
 .login-box {
   margin-right: 5px;
+  padding: 5px;
+  border-radius: 5px;
 }

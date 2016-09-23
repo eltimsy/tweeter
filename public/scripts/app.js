@@ -1,14 +1,11 @@
 'use strict'
-/*
- * Client-side JS logic goes here
- * jQuery is already loaded
- * Reminder: Use (and do all your DOM work in) jQuery's document ready function
- */
- function e(str) {
-     let div = document.createElement('div');
-     div.appendChild(document.createTextNode(str));
-     return div.innerHTML;
- }
+const username = document.cookie.substring(9);
+
+function e(str) {
+  let div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
 
 function createTweetElement(tweet) {
   let $user = [e(tweet.user.name), e(tweet.user.handle), e(tweet.user.avatars.small)];
@@ -34,7 +31,6 @@ function createTweetElement(tweet) {
     newTime = theSecond + " seconds ago.";
   }
 
-
   let template = _.template(
     "<article class='tweet-box'>" +
       "<header>" +
@@ -52,8 +48,6 @@ function createTweetElement(tweet) {
       "</article>"
   );
 
-
-  //$tweet.append($header, $paragraph, $foote);
   return template({
     username: $user[0],
     usericon: $user[2],
@@ -92,6 +86,26 @@ function loadTweets() {
   });
 }
 
+function loadmyTweets() {
+  $.ajax({
+    url: '/tweets/my',
+    method: 'GET',
+    success: function(data) {
+      if(data === undefined) {
+        alert("no data");
+      } else {
+        $("#all-tweets").empty();
+        $(".tweet-text").val("");
+        $(".counter").text("140");
+        renderTweets(data)
+      }
+    },
+    error: function(request, status, error) {
+      alert(request.reponseText);
+    }
+  });
+}
+
 function postTweets(tweetData) {
   $.ajax({
     url: '/tweets',
@@ -101,7 +115,11 @@ function postTweets(tweetData) {
       if(data === undefined) {
         alert("no data");
       } else {
-        loadTweets();
+        if(username) {
+          loadmyTweets();
+        } else {
+          loadTweets();
+        }
       }
     },
     error: function(request, status, error) {
@@ -110,13 +128,14 @@ function postTweets(tweetData) {
   });
 }
 
+
 function makeLogin(user) {
   if(user){
     var template = _.template(
       '<div class="full-logout">' +
-        '<div class="login-name"> <%= username %> </div>' +
+        '<div class="login-name"> Welcome! <%= username %> </div>' +
         '<form class="logout-form" action="/logout" method="POST">' +
-          '<input type="submit" value="Logout">' +
+          '<input class="logout-button" type="submit" value="Logout">' +
         '</form>'+
       '</div>'
     )
@@ -126,7 +145,7 @@ function makeLogin(user) {
       '<div class="full-login">' +
         '<form class="login-form" action="/login" method="POST">' +
           '<input class="login-box" id="username" type="text" name="username" placeholder="name" style="width: 100px">' +
-          '<input type="submit" value="Login">' +
+          '<input class="login-button" type="submit" value="Login">' +
         '</form>' +
       '</div>'
     )
@@ -137,14 +156,6 @@ function makeLogin(user) {
 }
 
 $(document).ready(function() {
-  $('.full-login').on("submit", function(ev) {
-    //ev.preventDefault();
-    let $newlogin = makeLogin($('#username').val());
-    $(".full-login").empty();
-    $(".full-login").css({"margin":"0px"});
-    $(".full-login").append($newlogin);
-  })
-
   $('.container').on('click', 'article.tweet-box', function() {
     alert('Tweet, Tweet!');
   });
@@ -166,9 +177,13 @@ $(document).ready(function() {
       postTweets(tweetData);
     }
   });
+  let $newlogin = makeLogin(username);
 
-  loadTweets();
-  let $newlogin = makeLogin(document.cookie.substring(9));
+  if(username) {
+    loadmyTweets();
+  } else {
+    loadTweets();
+  }
+  $(".full-login").css({"margin":"0px"});
   $(".full-login").empty().append($newlogin);
-
 });

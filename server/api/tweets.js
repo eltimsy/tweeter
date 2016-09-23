@@ -16,6 +16,17 @@ module.exports = function(db) {
     });
   });
 
+  tweets.get("/my", function(req, res) {
+    let user = req.cookies.username;
+    let tweets = db.collection("tweets").find({ "user.name": `${user} ${user}` }).sort({"created_at": -1});
+    tweets.toArray((err, results) => {
+      // simulate delay
+      setTimeout(() => {
+        return res.json(results);
+      }, 300);
+    });
+  });
+
   tweets.post("/", function(req, res) {
     // console.log("New Tweet, Body:", req.body);
     if (!req.body.text) {
